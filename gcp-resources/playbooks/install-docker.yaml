@@ -1,0 +1,16 @@
+  - name: install docker
+    apt:
+      name: docker.io
+      state: present
+  
+  - name: Log in to Docker Hub
+    docker_login:
+      username: "{{ hub_username }}"
+      password: "{{ hub_password }}"
+      reauthorize: yes
+    register: login_results
+  - debug: 
+      var: login_results
+  
+  - name: adding jenkins user to docker group
+    command: "usermod -aG docker jenkins"

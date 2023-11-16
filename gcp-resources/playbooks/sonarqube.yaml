@@ -1,0 +1,25 @@
+- name: install sonarqube
+  hosts: sonarqube
+  become: yes
+
+  tasks:
+  - name: update cache
+    apt:
+     update_cache: yes
+  
+  - name: install docker
+    apt:
+      name: docker.io
+      state: present
+  
+  - name: Log in to Docker Hub
+    docker_login:
+      username: "{{ hub_username }}"
+      password: "{{ hub_password }}"
+      reauthorize: yes
+    register: login_results
+  - debug: 
+      var: login_results
+
+  - name: run sonarqube container
+    command: "docker run --name sonarqube -p 9000:9000 -p 9092:9092 -d sonarqube"

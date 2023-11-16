@@ -1,0 +1,11 @@
+  - name: create argocd namespace
+    shell: kubectl create ns argocd || echo "namespace already exists"
+
+  - name: get argocd yaml file
+    get_url:
+      url: https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/core-install.yaml
+      dest: ~/core-install.yaml
+      mode: 0755
+
+  - name: apply argocd yaml
+    shell: kubectl apply -n argocd -f ~/core-install.yaml

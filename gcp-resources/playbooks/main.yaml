@@ -1,0 +1,19 @@
+- name: installing all req tools
+  hosts: install_tools
+  become: yes
+
+  tasks:
+  - name: install Jenkins
+    include_tasks: install-jenkins.yaml
+
+  - name: install docker
+    include_tasks: install-docker.yaml
+  
+  - name: get gke cluster config
+    include_tasks: get-gke-cluster-config.yaml
+
+  - name: install ArgoCd
+    include_tasks: install-argocd.yaml
+  
+  - name: copy config to jenkins user
+    include_tasks: copy-config.yaml

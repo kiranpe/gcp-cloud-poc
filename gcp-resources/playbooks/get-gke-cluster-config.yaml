@@ -1,0 +1,2 @@
+  - name: get gke cluster credentials
+    command: "gcloud container clusters get-credentials {{ gke_cluster_name }} --project {{ project_id }} --zone {{ zone }}"

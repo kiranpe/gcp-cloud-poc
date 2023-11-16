@@ -1,0 +1,48 @@
+  - name: update apt cache
+    apt: 
+      update_cache: yes
+  
+  - name: add jenkins key
+    get_url:
+      url: https://pkg.jenkins.io/debian/jenkins.io-2023.key
+      dest: /usr/share/keyrings/jenkins-keyring.asc
+
+  - name: add jenkins repo to source list
+    apt_repository:
+      repo: "deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian binary/"
+      state: present
+      filename: jenkins.list
+      update_cache : yes    
+
+  - name: install jenkins
+    apt:
+      name: jenkins
+      state: present
+    register: jenkins_status
+    until: jenkins_status is success
+    delay: 10
+    retries: 10   
+
+  - name: clean up apt
+    apt:
+      autoclean: yes
+
+  - name: print intial password
+    shell: cat /var/lib/jenkins/secrets/initialAdminPassword
+    register: password
+  
+  - debug: msg="Initial Password is {{ password.stdout }}"
+
+  - name: add jenkins to root
+    lineinfile:
+      path: /etc/sudoers
+      insertafter: '^# User privilege specification'
+      line: 'jenkins ALL=(ALL) NOPASSWD: ALL'
+      firstmatch: yes
+      state: present
+  
+  - name: get the instance publicIp
+    command: 'curl -H "Metadata-Flavor: Google" http://metadata/computeMetadata/v1/instance/network-interfaces/0/access-configs/0/external-ip'
+    register: publicIp
+
+  - debug: msg="Jenkins Url is http://{{ publicIp.stdout }}:8080"

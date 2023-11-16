@@ -1,0 +1,14 @@
+  - name: create .kube folder
+    file:
+     path: /var/lib/jenkins/.kube
+     state: directory
+     owner: jenkins
+     group: jenkins
+     mode: 0755
+     recurse: yes
+
+  - name: copy config to jenkins user
+    command: "scp -r /root/.kube/config /var/lib/jenkins/.kube/"
+
+  - name: change file permissions
+    command: "chown jenkins:jenkins /var/lib/jenkins/.kube/config"
